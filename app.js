@@ -1,20 +1,20 @@
-const express = require('express');
-const createHttpError = require('http-errors');
-const morgan = require('morgan');
-const mongoose = require('mongoose');
-require('dotenv').config();
-const session = require('express-session');
-const connectFlash = require('connect-flash');
-const passport = require('passport');
-const connectMongo = require('connect-mongo');
-const { ensureLoggedIn } = require('connect-ensure-login');
-const { roles } = require('./utils/constants');
+const express = require("express");
+const createHttpError = require("http-errors");
+const morgan = require("morgan");
+const mongoose = require("mongoose");
+require("dotenv").config();
+const session = require("express-session");
+const connectFlash = require("connect-flash");
+const passport = require("passport");
+const connectMongo = require("connect-mongo");
+const { ensureLoggedIn } = require("connect-ensure-login");
+const { roles } = require("./utils/constants");
 
 // Initialization
 const app = express();
-app.use(morgan('dev'));
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
+app.use(morgan("dev"));
+app.set("view engine", "ejs");
+app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -36,7 +36,7 @@ app.use(
 // For Passport JS Authentication
 app.use(passport.initialize());
 app.use(passport.session());
-require('./utils/passport.auth');
+require("./utils/passport.auth");
 
 app.use((req, res, next) => {
   res.locals.user = req.user;
@@ -51,18 +51,18 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/', require('./routes/index.route'));
-app.use('/auth', require('./routes/auth.route'));
+app.use("/", require("./routes/index.route"));
+app.use("/auth", require("./routes/auth.route"));
 app.use(
-  '/user',
-  ensureLoggedIn({ redirectTo: '/auth/login' }),
-  require('./routes/user.route')
+  "/user",
+  ensureLoggedIn({ redirectTo: "/auth/login" }),
+  require("./routes/user.route")
 );
 app.use(
-  '/admin',
-  ensureLoggedIn({ redirectTo: '/auth/login' }),
+  "/admin",
+  ensureLoggedIn({ redirectTo: "/auth/login" }),
   ensureAdmin,
-  require('./routes/admin.route')
+  require("./routes/admin.route")
 );
 
 // 404 Handler
@@ -74,7 +74,7 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
   error.status = error.status || 500;
   res.status(error.status);
-  res.render('error_40x', { error });
+  res.render("error_40x", { error });
 });
 
 // Setting the PORT
@@ -90,7 +90,7 @@ mongoose
     useFindAndModify: false,
   })
   .then(() => {
-    console.log('💾 connected...');
+    console.log("💾 connected...");
     // Listening for connections on the defined PORT
     app.listen(PORT, () => console.log(`🚀 @ http://localhost:${PORT}`));
   })
@@ -108,8 +108,8 @@ function ensureAdmin(req, res, next) {
   if (req.user.role === roles.admin) {
     next();
   } else {
-    req.flash('warning', 'you are not Authorized to see this route');
-    res.redirect('/');
+    req.flash("warning", "you are not Authorized to see this route");
+    res.redirect("/");
   }
 }
 
@@ -117,7 +117,7 @@ function ensureModerator(req, res, next) {
   if (req.user.role === roles.moderator) {
     next();
   } else {
-    req.flash('warning', 'you are not Authorized to see this route');
-    res.redirect('/');
+    req.flash("warning", "you are not Authorized to see this route");
+    res.redirect("/");
   }
 }
